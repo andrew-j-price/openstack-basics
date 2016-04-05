@@ -1,0 +1,37 @@
+---
+
+OS_AUTH_URL: "http://169.254.111.169:5000/v2.0/"
+OS_TENANT_NAME: "default"
+OS_USERNAME: "default"
+OS_PASSWORD: "password"
+
+generic_name: "default"
+
+keypair_name: "key-{{ generic_name }}"
+keypair_file: "/home/{{ generic_name }}/.ssh/id_rsa.pub"
+
+public_network_name: "public-facing-network"
+public_subnet_name: "public-facing-subnet"
+public_subnet_cidr: "10.169.1.0/24"
+
+private_network_name: "local-only-network"
+private_subnet_name: "local-only-subnet"
+private_subnet_cidr: "10.169.169.0/24"
+
+public_float_network: "public_float_network"
+
+router_name: "router"
+router_ip: "10.169.1.1"
+
+security_group_name: "{{ generic_name }}-security-group"
+security_group_desc: "Security Group for {{ generic_name }}"
+
+image_current_name: "{{ image_cirros_0_3_4_name }}"
+image_current_md5sum: "{{ image_cirros_0_3_4_md5sum }}"
+image_current_source: "{{ image_cirros_0_3_4_source }}"
+image_current_destination: "{{ image_cirros_0_3_4_destination }}"
+
+image_cirros_0_3_4_name: "cirros_0.3.4"
+image_cirros_0_3_4_md5sum: 79b4436412283bb63c2cba4ac796bcd9
+image_cirros_0_3_4_source: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-i386-disk.img
+image_cirros_0_3_4_destination: "/var/tmp/cirros-0.3.4-i386-disk.img"

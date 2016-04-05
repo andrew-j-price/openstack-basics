@@ -1,0 +1,141 @@
+---
+
+- name: add keypair
+  os_keypair:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    name: "{{ keypair_name }}"
+    public_key_file: "{{ keypair_file }}"
+  tags:
+    - nova
+
+- name: add public network
+  os_network:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    name: "{{ public_network_name }}"
+    external: no
+  tags:
+    - neutron
+
+- name: add public subnet
+  os_subnet:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    network_name: "{{ public_network_name }}"
+    name: "{{ public_subnet_name }}"
+    cidr: "{{ public_subnet_cidr }}"
+    dns_nameservers:
+       - 8.8.8.8
+       - 8.8.4.4
+  tags:
+    - neutron
+
+# applied https://review.openstack.org/#/c/289538/ to fix second run error of "KeyError: 'external_fixed_ips'"
+- name: add router
+  os_router:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    name: "{{ router_name }}"
+    network: "{{ public_float_network }}"
+    interfaces:
+      - "{{ public_subnet_name }}"
+  tags:
+    - neutron
+
+- name: add private network
+  os_network:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    name: "{{ private_network_name }}"
+    external: no
+  tags:
+    - neutron
+
+- name: add private subnet
+  os_subnet:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    network_name: "{{ private_network_name }}"
+    name: "{{ private_subnet_name }}"
+    cidr: "{{ private_subnet_cidr }}"
+  tags:
+    - neutron
+
+- name: add security group
+  os_security_group:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    state: present
+    name: "{{ security_group_name }}"
+    description: "{{ security_group_desc }}"
+  tags:
+    - nova
+
+- name: add security group rule
+  os_security_group_rule:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    security_group: "{{ security_group_name }}"
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: 0.0.0.0/0
+  tags:
+    - nova
+
+- name: download image
+  get_url:
+    url: "{{ image_current_source }}"
+    dest: "{{ image_current_destination }}"
+    checksum: "md5:{{ image_current_md5sum }}"
+  tags:
+    - glance
+
+- name: upload image
+  os_image:
+    auth:
+      auth_url: "{{ OS_AUTH_URL }}"
+      username: "{{ OS_USERNAME }}"
+      password: "{{ OS_PASSWORD }}"
+      project_name: "{{ OS_TENANT_NAME }}"
+    name: "{{ image_current_name }}"
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: "{{ image_current_destination }}"
+    properties:
+      cpu_arch: i386
+      distro: ubuntu
+  tags:
+    - glance

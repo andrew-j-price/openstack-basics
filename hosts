@@ -1,0 +1,8 @@
+[prod1]
+local_connection_prod1      ansible_connection=local
+
+[prod2]
+local_connection_prod2      ansible_connection=local
+
+[dev]
+local_connection_dev        ansible_connection=local

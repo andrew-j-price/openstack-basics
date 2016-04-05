@@ -1,0 +1,8 @@
+---
+
+- hosts: all
+  gather_facts: false
+  vars_files:
+    - group_vars/shared.yml
+  roles:
+    - play

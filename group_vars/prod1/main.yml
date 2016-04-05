@@ -1,0 +1,9 @@
+OS_AUTH_URL: "http://192.168.56.9:5000/v2.0/"
+OS_TENANT_NAME: "MyApp_Prod_Site1"
+OS_USERNAME: "andrew"
+
+public_subnet_cidr: "10.1.1.0/24"
+
+private_subnet_cidr: "10.1.169.0/24"
+
+router_ip: "10.1.1.1"
