@@ -1,0 +1,46 @@
+{
+    "variables": {
+        "home": "{{env `HOME`}}"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "",
+        "secret_key": "",
+        "region": "us-east-1",
+        "source_ami": "ami-e13739f6",
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ssh_timeout": "2m",
+        "ami_name": "packer-testing-{{timestamp}}",
+        "tags": {
+            "OS_Version": "Ubuntu",
+            "OS_Release": "Xenial",
+            "Ansible": "Toolchain"
+        }
+    }],
+    "provisioners": [{
+        "type": "shell",
+        "inline": ["sleep 15"]
+    }, {
+        "type": "shell",
+        "inline": [
+            "sudo apt-get update",
+            "sudo apt-get install -y build-essential libssl-dev libffi-dev python-minimal python-dev python-pip",
+            "sudo pip install ansible"
+        ]
+    }, {
+        "type": "ansible-local",
+        "playbook_file": "{{ user `home` }}/github/toolchain/play.yml",
+        "role_paths": [
+            "{{ user `home` }}/github/toolchain/roles/configure"
+        ],
+        "group_vars": "{{ user `home` }}/github/toolchain/group_vars/",
+        "playbook_dir": "{{ user `home` }}/github/toolchain/"
+    }, {
+        "type": "shell",
+        "inline": [
+            "sudo rm -rf /root/.ssh/authorized_keys",
+            "sudo rm -rf /home/ubuntu/.ssh/authorized_keys"
+        ]
+    }]
+}

@@ -1,11 +1,14 @@
-# openstack-essentials
+# provisioning-cookbook
 
-Prior to actually being able to utilize an OpenStack Project, you need to get the basics in place.  This multi-site friendly proof of concept repo allows for just that.
+This is just a learning repo with examples/cookbooks on how one could provision various items.
 
-### What are the essentials?
-  - keypairs
-  - network: subnet, router, gateway
-  - security groups and rules
-  - custom images
+There are so many cool and interesting solutions out there in regards to orchestration and provisioning.  Here are just a few examples.
 
-Now you can provision your instances and volumes to be productive!
+### Tools Used
+  - ansible
+  - packer
+  - terraform
+
+### Providers Leveraged
+  - AWS
+  - OpenStack
